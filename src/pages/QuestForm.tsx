@@ -176,7 +176,7 @@ const QuestForm = () => {
     return (
         <div className="min-h-screen bg-gradient-quest-radial pb-8">
             <header className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-b border-white/5 z-50 p-4">
-                <div className="container max-w-lg mx-auto flex items-center justify-between">
+                <div className="container max-w-4xl mx-auto flex items-center justify-between">
                     <Button
                         variant="ghost"
                         size="icon"
@@ -192,7 +192,7 @@ const QuestForm = () => {
                 </div>
             </header>
 
-            <main className="container max-w-lg mx-auto pt-24 px-4">
+            <main className="container max-w-4xl mx-auto pt-24 px-4">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 

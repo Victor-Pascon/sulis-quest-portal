@@ -10,7 +10,7 @@ export const BottomNav = () => {
 
     return (
         <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-border/50 p-2 pb-6 md:pb-2 z-50">
-            <div className="container max-w-md mx-auto flex justify-between items-center px-4">
+            <div className="container max-w-lg mx-auto flex justify-between items-center px-4">
                 <Button
                     variant="ghost"
                     size="icon"

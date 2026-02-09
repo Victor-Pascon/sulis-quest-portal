@@ -2,97 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-/* Sulis Quest Design System — Dark gamified theme with purple/blue palette */
+/* Sulis Quest Design System — Vibrant gamified theme with red/pink/purple glassmorphism */
 
 @layer base {
   :root {
-    --background: 250 30% 6%;
-    --foreground: 220 20% 95%;
+    --background: 250 35% 6%;
+    --foreground: 0 0% 98%;
 
-    --card: 250 25% 10%;
-    --card-foreground: 220 20% 95%;
+    --card: 250 30% 12%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 250 25% 10%;
-    --popover-foreground: 220 20% 95%;
+    --popover: 250 30% 12%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 265 80% 60%;
+    --primary: 265 90% 65%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 60% 50%;
+    --secondary: 220 75% 60%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 250 20% 16%;
-    --muted-foreground: 220 15% 60%;
+    --muted: 250 25% 18%;
+    --muted-foreground: 0 10% 65%;
 
-    --accent: 265 60% 45%;
+    --accent: 280 80% 60%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 250 20% 18%;
-    --input: 250 20% 18%;
-    --ring: 265 80% 60%;
+    --border: 250 25% 20%;
+    --input: 250 25% 20%;
+    --ring: 265 90% 65%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    --sidebar-background: 250 25% 8%;
-    --sidebar-foreground: 220 20% 90%;
-    --sidebar-primary: 265 80% 60%;
+    --sidebar-background: 250 30% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 265 90% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 250 20% 16%;
-    --sidebar-accent-foreground: 220 20% 90%;
-    --sidebar-border: 250 20% 18%;
-    --sidebar-ring: 265 80% 60%;
+    --sidebar-accent: 250 25% 18%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 250 25% 20%;
+    --sidebar-ring: 265 90% 65%;
 
     /* Custom tokens for Sulis Quest */
-    --glow-primary: 265 80% 60%;
-    --glow-secondary: 220 60% 50%;
-    --gradient-start: 265 80% 60%;
-    --gradient-end: 220 60% 50%;
-    --success: 142 70% 45%;
+    --glow-primary: 265 90% 65%;
+    --glow-secondary: 220 75% 60%;
+    --gradient-start: 265 90% 65%;
+    --gradient-mid: 240 85% 65%;
+    --gradient-end: 220 75% 60%;
+    --success: 142 70% 50%;
     --success-foreground: 0 0% 100%;
   }
 
   .dark {
-    --background: 250 30% 6%;
-    --foreground: 220 20% 95%;
+    --background: 250 35% 6%;
+    --foreground: 0 0% 98%;
 
-    --card: 250 25% 10%;
-    --card-foreground: 220 20% 95%;
+    --card: 250 30% 12%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 250 25% 10%;
-    --popover-foreground: 220 20% 95%;
+    --popover: 250 30% 12%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 265 80% 60%;
+    --primary: 265 90% 65%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 60% 50%;
+    --secondary: 220 75% 60%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 250 20% 16%;
-    --muted-foreground: 220 15% 60%;
+    --muted: 250 25% 18%;
+    --muted-foreground: 0 10% 65%;
 
-    --accent: 265 60% 45%;
+    --accent: 280 80% 60%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 250 20% 18%;
-    --input: 250 20% 18%;
-    --ring: 265 80% 60%;
+    --border: 250 25% 20%;
+    --input: 250 25% 20%;
+    --ring: 265 90% 65%;
 
-    --sidebar-background: 250 25% 8%;
-    --sidebar-foreground: 220 20% 90%;
-    --sidebar-primary: 265 80% 60%;
+    --sidebar-background: 250 30% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 265 90% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 250 20% 16%;
-    --sidebar-accent-foreground: 220 20% 90%;
-    --sidebar-border: 250 20% 18%;
-    --sidebar-ring: 265 80% 60%;
+    --sidebar-accent: 250 25% 18%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 250 25% 20%;
+    --sidebar-ring: 265 90% 65%;
   }
 }
 
@@ -103,41 +104,88 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
   }
 
   html {
     color-scheme: dark;
   }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+  }
 }
 
 @layer utilities {
   .font-display {
-    font-family: 'Cinzel', serif;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
   }
 
   .glow-primary {
-    box-shadow: 0 0 20px hsl(265 80% 60% / 0.4), 0 0 60px hsl(265 80% 60% / 0.1);
+    box-shadow: 0 0 30px hsl(265 90% 65% / 0.5), 0 0 80px hsl(265 90% 65% / 0.2);
   }
 
   .glow-primary-hover {
-    box-shadow: 0 0 30px hsl(265 80% 60% / 0.6), 0 0 80px hsl(265 80% 60% / 0.2);
+    box-shadow: 0 0 40px hsl(265 90% 65% / 0.7), 0 0 100px hsl(265 90% 65% / 0.3);
+  }
+
+  .glow-secondary {
+    box-shadow: 0 0 30px hsl(220 75% 60% / 0.5), 0 0 80px hsl(220 75% 60% / 0.2);
   }
 
   .bg-gradient-quest {
-    background: linear-gradient(135deg, hsl(265 80% 12%) 0%, hsl(240 40% 8%) 50%, hsl(220 60% 10%) 100%);
+    background: linear-gradient(135deg, hsl(265 90% 15%) 0%, hsl(240 85% 12%) 50%, hsl(220 75% 10%) 100%);
   }
 
   .bg-gradient-quest-radial {
-    background: radial-gradient(ellipse at top, hsl(265 80% 20% / 0.3) 0%, transparent 60%),
-                radial-gradient(ellipse at bottom right, hsl(220 60% 20% / 0.2) 0%, transparent 60%),
-                hsl(250 30% 6%);
+    background:
+      radial-gradient(ellipse at top left, hsl(265 90% 25% / 0.4) 0%, transparent 50%),
+      radial-gradient(ellipse at top right, hsl(240 85% 20% / 0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom, hsl(220 75% 18% / 0.35) 0%, transparent 60%),
+      hsl(250 35% 6%);
   }
 
   .text-gradient-quest {
-    background: linear-gradient(135deg, hsl(265 80% 70%), hsl(220 80% 70%));
+    background: linear-gradient(135deg, hsl(265 90% 70%), hsl(240 85% 65%), hsl(220 75% 70%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-card-hover {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  /* Vibrant Progress Bar Animations */
+  @keyframes progress-glow {
+
+    0%,
+    100% {
+      box-shadow: 0 0 20px hsl(265 90% 65% / 0.6), 0 0 40px hsl(265 90% 65% / 0.3);
+    }
+
+    50% {
+      box-shadow: 0 0 30px hsl(265 90% 65% / 0.8), 0 0 60px hsl(265 90% 65% / 0.4);
+    }
+  }
+
+  .progress-vibrant {
+    animation: progress-glow 2s ease-in-out infinite;
   }
 }

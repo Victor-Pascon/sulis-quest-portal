@@ -26,7 +26,9 @@ export const QuestCard = ({ id, title, description, reward, isCompleted, onCompl
 
     return (
         <Card
-            className={`border-border/50 bg-card/60 backdrop-blur-sm transition-all duration-300 cursor-pointer ${complete ? "opacity-70 border-primary/20" : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
+            className={`glass-card transition-all duration-300 cursor-pointer ${complete
+                    ? "opacity-60 border-primary/20"
+                    : "hover:glass-card-hover hover:shadow-xl hover:shadow-primary/10 hover:scale-[1.02]"
                 }`}
             onClick={() => navigate(`/quests/edit/${id}`)}
         >
@@ -34,22 +36,22 @@ export const QuestCard = ({ id, title, description, reward, isCompleted, onCompl
                 <div className="flex items-center gap-4">
                     <div
                         onClick={handleComplete}
-                        className={`cursor-pointer w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${complete
-                            ? "bg-primary border-primary text-primary-foreground scale-110"
-                            : "border-muted-foreground/30 hover:border-primary/50"
+                        className={`cursor-pointer w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${complete
+                                ? "bg-gradient-to-br from-primary to-secondary border-primary text-primary-foreground scale-110 glow-primary"
+                                : "border-muted-foreground/30 hover:border-primary/70 hover:bg-primary/10"
                             }`}
                     >
                         {complete && <Check className="w-5 h-5" />}
                     </div>
 
                     <div className={`transition-all duration-300 ${complete ? "line-through text-muted-foreground" : ""}`}>
-                        <h4 className="font-semibold text-foreground">{title}</h4>
-                        {description && <p className="text-sm text-muted-foreground">{description}</p>}
+                        <h4 className="font-semibold text-foreground text-base">{title}</h4>
+                        {description && <p className="text-sm text-muted-foreground mt-0.5">{description}</p>}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-1 text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
-                    <Swords className="w-3 h-3" />
+                <div className="flex items-center gap-1.5 text-xs font-bold text-primary bg-gradient-to-r from-primary/20 to-secondary/20 px-3 py-1.5 rounded-full border border-primary/30">
+                    <Swords className="w-3.5 h-3.5" />
                     <span>+{reward}</span>
                 </div>
             </CardContent>
