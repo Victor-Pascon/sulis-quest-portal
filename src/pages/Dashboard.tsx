@@ -84,9 +84,43 @@ const Dashboard = () => {
 
       if (questError) throw questError;
 
-      // Update Profile Balance
+      // Increment Goal Progress
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        const { data: activeGoals, error: goalsError } = await supabase
+          .from('goals')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('is_completed', false);
+
+        if (!goalsError && activeGoals) {
+          for (const goal of activeGoals) {
+            const newCount = goal.current_count + 1;
+            const isNowCompleted = newCount >= goal.target_count;
+
+            const updateData: any = { current_count: newCount };
+            if (isNowCompleted) {
+              updateData.is_completed = true;
+              toast.success(`Meta Atingida: ${goal.title}! +${goal.reward_amount} Sulis extras! 🏆`);
+
+              // Add goal reward to balance
+              const { error: rpcError } = await supabase.rpc('increment_balance', { amount: goal.reward_amount });
+              if (rpcError) {
+                const { data: cp } = await supabase.from('profiles').select('sulis_balance').eq('id', user.id).single();
+                if (cp) {
+                  await supabase.from('profiles').update({ sulis_balance: (cp.sulis_balance || 0) + goal.reward_amount }).eq('id', user.id);
+                }
+              }
+            }
+
+            await supabase
+              .from('goals')
+              .update(updateData)
+              .eq('id', goal.id);
+          }
+        }
+
+        // Update Profile Balance for the quest reward
         const { error: profileError } = await supabase
           .rpc('increment_balance', { amount: reward });
 

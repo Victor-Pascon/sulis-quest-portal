@@ -25,7 +25,7 @@ export const BottomNav = () => {
                     variant="ghost"
                     size="icon"
                     className={`flex flex-col gap-1 h-auto ${isActive('/goals') ? 'text-primary' : 'text-muted-foreground'}`}
-                    onClick={() => navigate('/goals')} // Placeholder
+                    onClick={() => navigate('/goals')}
                 >
                     <Target className="w-6 h-6" />
                     <span className="text-[10px] font-medium">Metas</span>
