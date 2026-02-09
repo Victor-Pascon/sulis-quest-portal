@@ -1,14 +1,42 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import { LogOut, Sparkles, Swords, Trophy, Target } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [username, setUsername] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', user.id)
+        .single();
+
+      if (data && !error) {
+        setUsername(data.username);
+      } else {
+        // Fallback or handle error silently
+        console.error("Error fetching profile:", error);
+      }
+    };
+
+    getProfile();
+  }, [navigate]);
 
   const handleLogout = async () => {
-    // TODO: Integrate with Supabase Auth
-    // await supabase.auth.signOut();
+    await supabase.auth.signOut();
     navigate("/auth");
   };
 
@@ -38,7 +66,7 @@ const Dashboard = () => {
         <div className="max-w-2xl mx-auto text-center space-y-8">
           <div className="space-y-3">
             <h2 className="text-3xl md:text-4xl font-display font-bold text-gradient-quest">
-              Bem-vindo, Aventureiro!
+              Bem-vindo, {username || "Aventureiro"}!
             </h2>
             <p className="text-muted-foreground text-lg">
               Sua jornada épica começa agora. Prepare-se para conquistar suas metas!
