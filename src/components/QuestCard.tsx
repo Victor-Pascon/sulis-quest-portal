@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Check, Circle, Swords } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState, type MouseEvent } from "react";
+import { Check, Swords } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 interface QuestProps {
     id: string;
@@ -14,8 +14,10 @@ interface QuestProps {
 
 export const QuestCard = ({ id, title, description, reward, isCompleted, onComplete }: QuestProps) => {
     const [complete, setComplete] = useState(isCompleted);
+    const navigate = useNavigate();
 
-    const handleComplete = () => {
+    const handleComplete = (e: MouseEvent) => {
+        e.stopPropagation();
         if (!complete) {
             setComplete(true);
             onComplete(id);
@@ -24,16 +26,17 @@ export const QuestCard = ({ id, title, description, reward, isCompleted, onCompl
 
     return (
         <Card
-            className={`border-border/50 bg-card/60 backdrop-blur-sm transition-all duration-300 ${complete ? "opacity-70 border-primary/20" : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
+            className={`border-border/50 bg-card/60 backdrop-blur-sm transition-all duration-300 cursor-pointer ${complete ? "opacity-70 border-primary/20" : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
                 }`}
+            onClick={() => navigate(`/quests/edit/${id}`)}
         >
             <CardContent className="p-4 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                     <div
                         onClick={handleComplete}
                         className={`cursor-pointer w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${complete
-                                ? "bg-primary border-primary text-primary-foreground scale-110"
-                                : "border-muted-foreground/30 hover:border-primary/50"
+                            ? "bg-primary border-primary text-primary-foreground scale-110"
+                            : "border-muted-foreground/30 hover:border-primary/50"
                             }`}
                     >
                         {complete && <Check className="w-5 h-5" />}

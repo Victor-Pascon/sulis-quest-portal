@@ -199,7 +199,7 @@ const Dashboard = () => {
             ) : (
               <div className="text-center py-8 space-y-4 border border-dashed border-border rounded-xl bg-card/30">
                 <p className="text-muted-foreground">Nenhuma quest ativa.</p>
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="gap-2" onClick={() => navigate("/quests/new")}>
                   <Plus className="w-4 h-4" /> Adicionar Quest
                 </Button>
               </div>
@@ -213,6 +213,7 @@ const Dashboard = () => {
       <Button
         className="fixed bottom-24 right-4 w-14 h-14 rounded-full shadow-lg z-40 md:hidden bg-primary hover:bg-primary/90 glow-primary"
         size="icon"
+        onClick={() => navigate("/quests/new")}
       >
         <Plus className="w-6 h-6" />
       </Button>
