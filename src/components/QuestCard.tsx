@@ -10,15 +10,19 @@ interface QuestProps {
     reward: number;
     isCompleted: boolean;
     onComplete: (id: string) => void;
+    onUncomplete?: (id: string) => void;
 }
 
-export const QuestCard = ({ id, title, description, reward, isCompleted, onComplete }: QuestProps) => {
+export const QuestCard = ({ id, title, description, reward, isCompleted, onComplete, onUncomplete }: QuestProps) => {
     const [complete, setComplete] = useState(isCompleted);
     const navigate = useNavigate();
 
-    const handleComplete = (e: MouseEvent) => {
+    const handleToggle = (e: MouseEvent) => {
         e.stopPropagation();
-        if (!complete) {
+        if (complete) {
+            setComplete(false);
+            onUncomplete?.(id);
+        } else {
             setComplete(true);
             onComplete(id);
         }
@@ -35,11 +39,12 @@ export const QuestCard = ({ id, title, description, reward, isCompleted, onCompl
             <CardContent className="p-4 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                     <div
-                        onClick={handleComplete}
+                        onClick={handleToggle}
                         className={`cursor-pointer w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${complete
                                 ? "bg-gradient-to-br from-primary to-secondary border-primary text-primary-foreground scale-110 glow-primary"
                                 : "border-muted-foreground/30 hover:border-primary/70 hover:bg-primary/10"
                             }`}
+                        title={complete ? "Clique para desmarcar" : "Clique para concluir"}
                     >
                         {complete && <Check className="w-5 h-5" />}
                     </div>

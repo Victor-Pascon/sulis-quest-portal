@@ -1,4 +1,4 @@
-import { LayoutDashboard, Target, Gift, User } from "lucide-react";
+import { LayoutDashboard, Target, History, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -34,18 +34,18 @@ export const BottomNav = () => {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className={`flex flex-col gap-1 h-auto ${isActive('/rewards') ? 'text-primary' : 'text-muted-foreground'}`}
-                    onClick={() => navigate('/rewards')} // Placeholder
+                    className={`flex flex-col gap-1 h-auto ${isActive('/history') ? 'text-primary' : 'text-muted-foreground'}`}
+                    onClick={() => navigate('/history')}
                 >
-                    <Gift className="w-6 h-6" />
-                    <span className="text-[10px] font-medium">Recompensas</span>
+                    <History className="w-6 h-6" />
+                    <span className="text-[10px] font-medium">Histórico</span>
                 </Button>
 
                 <Button
                     variant="ghost"
                     size="icon"
                     className={`flex flex-col gap-1 h-auto ${isActive('/profile') ? 'text-primary' : 'text-muted-foreground'}`}
-                    onClick={() => navigate('/profile')} // Placeholder
+                    onClick={() => navigate('/profile')}
                 >
                     <User className="w-6 h-6" />
                     <span className="text-[10px] font-medium">Perfil</span>

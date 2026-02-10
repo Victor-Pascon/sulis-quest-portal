@@ -1,9 +1,10 @@
-import { Plus, Sparkles, Calendar, CheckCircle2, Circle } from "lucide-react";
+import { Plus, Calendar, CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { QuestCard } from "@/components/QuestCard";
 import { useNavigate } from "react-router-dom";
 import { isToday, parseISO } from "date-fns";
+import logoImage from "@/assets/logo-sulis-quest.png";
 
 interface Quest {
     id: string;
@@ -19,9 +20,10 @@ interface TodayViewProps {
     quests: Quest[];
     loading: boolean;
     onComplete: (id: string, reward: number) => void;
+    onUncomplete?: (id: string, reward: number) => void;
 }
 
-export const TodayView = ({ username, quests, loading, onComplete }: TodayViewProps) => {
+export const TodayView = ({ username, quests, loading, onComplete, onUncomplete }: TodayViewProps) => {
     const navigate = useNavigate();
 
     const hour = new Date().getHours();
@@ -56,8 +58,8 @@ export const TodayView = ({ username, quests, loading, onComplete }: TodayViewPr
                         <Plus className="w-5 h-5" />
                         <span className="hidden xs:inline">Nova Quest</span>
                     </Button>
-                    <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center border border-secondary/50 animate-pulse-glow">
-                        <Sparkles className="w-5 h-5 text-secondary" />
+                    <div className="w-10 h-10 rounded-full bg-background/40 flex items-center justify-center border border-white/10 overflow-hidden">
+                        <img src={logoImage} alt="Sulis Quest" className="w-8 h-8 object-contain" />
                     </div>
                 </div>
             </header>
@@ -112,6 +114,7 @@ export const TodayView = ({ username, quests, loading, onComplete }: TodayViewPr
                                     reward={quest.reward_amount}
                                     isCompleted={quest.is_completed}
                                     onComplete={() => onComplete(quest.id, quest.reward_amount)}
+                                    onUncomplete={() => onUncomplete?.(quest.id, quest.reward_amount)}
                                 />
                             ))
                         ) : (
@@ -150,7 +153,8 @@ export const TodayView = ({ username, quests, loading, onComplete }: TodayViewPr
                                     description={quest.description}
                                     reward={quest.reward_amount}
                                     isCompleted={quest.is_completed}
-                                    onComplete={() => { }}
+                                    onComplete={() => {}}
+                                    onUncomplete={() => onUncomplete?.(quest.id, quest.reward_amount)}
                                 />
                             ))}
                         </div>

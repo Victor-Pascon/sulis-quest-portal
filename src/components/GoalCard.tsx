@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 interface GoalCardProps {
     title: string;
-    type: 'daily' | 'weekly' | 'monthly';
+    type: string;
     currentCount: number;
     targetCount: number;
     rewardAmount: number;
@@ -22,13 +22,13 @@ export const GoalCard = ({
 }: GoalCardProps) => {
     const progress = Math.min((currentCount / targetCount) * 100, 100);
 
-    const typeLabels = {
+    const typeLabels: Record<string, string> = {
         daily: "Diária",
         weekly: "Semanal",
         monthly: "Mensal",
     };
 
-    const typeColors = {
+    const typeColors: Record<string, string> = {
         daily: "text-blue-400 bg-blue-400/10 border-blue-400/20",
         weekly: "text-purple-400 bg-purple-400/10 border-purple-400/20",
         monthly: "text-pink-400 bg-pink-400/10 border-pink-400/20",
@@ -40,8 +40,8 @@ export const GoalCard = ({
                 <div className="flex justify-between items-start gap-4">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${typeColors[type]}`}>
-                                {typeLabels[type]}
+                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${typeColors[type] || typeColors.daily}`}>
+                                {typeLabels[type] || type}
                             </span>
                             {isCompleted && (
                                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-success/20 bg-success/10 text-success flex items-center gap-1">
@@ -79,7 +79,6 @@ export const GoalCard = ({
                 </div>
             </CardContent>
 
-            {/* Background decoration */}
             <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
         </Card>
     );

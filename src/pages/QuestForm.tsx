@@ -4,10 +4,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Swords, Trash2, Bell, Clock, Save, Sparkles } from "lucide-react";
+import { ArrowLeft, Swords, Trash2, Bell, Save, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
     Form,
     FormControl,
@@ -33,12 +32,13 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { TimePicker } from "@/components/TimePicker";
 
 const formSchema = z.object({
     title: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
     description: z.string().optional(),
-    category: z.enum(["daily", "weekly", "monthly"]),
-    reward_amount: z.string(), // We'll convert to number
+    category: z.enum(["daily", "weekly", "monthly", "once"]),
+    reward_amount: z.string(),
     reminder_active: z.boolean().default(false),
     reminder_time: z.string().optional(),
 });
@@ -188,7 +188,7 @@ const QuestForm = () => {
                     <h1 className="text-xl font-bold text-foreground">
                         {isEditMode ? "Editar Quest" : "Nova Quest"}
                     </h1>
-                    <div className="w-10" /> {/* Spacer */}
+                    <div className="w-10" />
                 </div>
             </header>
 
@@ -248,12 +248,13 @@ const QuestForm = () => {
                                             <RadioGroup
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
-                                                className="grid grid-cols-3 gap-4"
+                                                className="grid grid-cols-4 gap-3"
                                             >
                                                 {[
                                                     { id: "daily", label: "Diária" },
                                                     { id: "weekly", label: "Semanal" },
-                                                    { id: "monthly", label: "Mensal" }
+                                                    { id: "monthly", label: "Mensal" },
+                                                    { id: "once", label: "Única" },
                                                 ].map((opt) => (
                                                     <FormItem key={opt.id}>
                                                         <FormControl>
@@ -358,16 +359,13 @@ const QuestForm = () => {
                                     name="reminder_time"
                                     render={({ field }) => (
                                         <FormItem className="animate-in slide-in-from-top-2 duration-300">
-                                            <div className="flex items-center gap-3 bg-background/50 border border-white/5 rounded-xl p-4">
-                                                <Clock className="w-5 h-5 text-primary" />
-                                                <FormControl>
-                                                    <input
-                                                        type="time"
-                                                        {...field}
-                                                        className="bg-transparent border-none text-foreground focus:ring-0 w-full text-lg cursor-pointer"
-                                                    />
-                                                </FormControl>
-                                            </div>
+                                            <FormLabel className="text-muted-foreground text-xs uppercase tracking-wider">Horário do Lembrete</FormLabel>
+                                            <FormControl>
+                                                <TimePicker
+                                                    value={field.value || "08:00"}
+                                                    onChange={field.onChange}
+                                                />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
