@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Target, Save, Trash2, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -38,8 +38,6 @@ const formSchema = z.object({
     target_count: z.string().transform((v) => parseInt(v, 10)),
     reward_amount: z.string().transform((v) => parseInt(v, 10)),
 });
-
-type FormValues = z.infer<typeof formSchema>;
 
 const GoalForm = () => {
     const { id } = useParams();
@@ -114,15 +112,41 @@ const GoalForm = () => {
                     .eq("id", id);
                 error = updateError;
             } else {
-                const { error: insertError } = await supabase
+                // Create goal
+                const { data: goalResult, error: insertError } = await supabase
                     .from("goals")
-                    .insert([goalData]);
+                    .insert([goalData])
+                    .select()
+                    .single();
                 error = insertError;
+
+                // Auto-generate quests for the new goal
+                if (!insertError && goalResult) {
+                    const targetCount = parseInt(values.target_count);
+                    const questsToCreate = [];
+                    for (let i = 1; i <= targetCount; i++) {
+                        questsToCreate.push({
+                            user_id: user.id,
+                            title: `${values.title} #${i}`,
+                            description: `Tarefa ${i} da meta: ${values.title}`,
+                            category: values.type,
+                            reward_amount: 1,
+                            goal_id: goalResult.id,
+                        });
+                    }
+                    const { error: questError } = await supabase
+                        .from("quests")
+                        .insert(questsToCreate);
+                    if (questError) {
+                        console.error("Error creating quests for goal:", questError);
+                        toast.error("Meta criada, mas houve erro ao gerar as tarefas.");
+                    }
+                }
             }
 
             if (error) throw error;
 
-            toast.success(isEditMode ? "Meta atualizada!" : "Nova meta criada!");
+            toast.success(isEditMode ? "Meta atualizada!" : "Nova meta criada com tarefas!");
             navigate("/goals");
         } catch (error) {
             console.error("Error saving goal:", error);
@@ -234,7 +258,7 @@ const GoalForm = () => {
                                         <FormItem>
                                             <FormLabel className="text-xs uppercase tracking-widest text-muted-foreground">Qtd. Quests</FormLabel>
                                             <FormControl>
-                                                <Input type="number" className="bg-background/50 border-white/10" {...field} />
+                                                <Input type="number" min="1" className="bg-background/50 border-white/10" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -247,7 +271,7 @@ const GoalForm = () => {
                                         <FormItem>
                                             <FormLabel className="text-xs uppercase tracking-widest text-muted-foreground">Bônus Sulis</FormLabel>
                                             <FormControl>
-                                                <Input type="number" className="bg-background/50 border-white/10" {...field} />
+                                                <Input type="number" min="1" className="bg-background/50 border-white/10" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

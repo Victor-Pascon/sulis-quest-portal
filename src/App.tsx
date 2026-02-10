@@ -8,6 +8,8 @@ import Dashboard from "./pages/Dashboard";
 import QuestForm from "./pages/QuestForm";
 import Goals from "./pages/Goals";
 import GoalForm from "./pages/GoalForm";
+import History from "./pages/History";
+import InstallPWA from "./pages/InstallPWA";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +29,8 @@ const App = () => (
           <Route path="/goals" element={<Goals />} />
           <Route path="/goals/new" element={<GoalForm />} />
           <Route path="/goals/edit/:id" element={<GoalForm />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/install" element={<InstallPWA />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

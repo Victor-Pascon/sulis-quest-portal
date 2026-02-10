@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TodayView } from "@/components/dashboard/TodayView";
 import { MetricsView } from "@/components/dashboard/MetricsView";
 import { LayoutDashboard, TrendingUp } from "lucide-react";
+import { format, subDays } from "date-fns";
 
 interface Quest {
   id: string;
@@ -15,6 +16,9 @@ interface Quest {
   reward_amount: number;
   is_completed: boolean;
   created_at: string;
+  goal_id: string | null;
+  completed_at: string | null;
+  category: string | null;
 }
 
 const Dashboard = () => {
@@ -29,9 +33,46 @@ const Dashboard = () => {
     fetchData();
   }, [navigate]);
 
+  // Request notification permission on mount
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  // Notification reminder interval
+  useEffect(() => {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+    const interval = setInterval(() => {
+      const now = new Date();
+      const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+      quests.forEach((quest) => {
+        if (
+          !quest.is_completed &&
+          (quest as any).reminder_active &&
+          (quest as any).reminder_time
+        ) {
+          const reminderTime = String((quest as any).reminder_time).substring(0, 5);
+          if (reminderTime === currentTime) {
+            new Notification(`🔔 ${quest.title}`, {
+              body: quest.description || "Hora de completar sua quest!",
+              icon: "/favicon.ico",
+            });
+          }
+        }
+      });
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [quests]);
+
   const fetchData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         navigate("/auth");
         return;
@@ -39,9 +80,9 @@ const Dashboard = () => {
 
       // Fetch Profile
       const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
         .single();
 
       if (profile) {
@@ -52,15 +93,14 @@ const Dashboard = () => {
 
       // Fetch Quests
       const { data: questData, error: questError } = await supabase
-        .from('quests')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('is_completed', { ascending: true })
-        .order('created_at', { ascending: false });
+        .from("quests")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("is_completed", { ascending: true })
+        .order("created_at", { ascending: false });
 
       if (questError) throw questError;
-      setQuests(questData || []);
-
+      setQuests((questData as Quest[]) || []);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       toast.error("Erro ao carregar dados.");
@@ -69,72 +109,194 @@ const Dashboard = () => {
     }
   };
 
+  const updateStreak = async (uid: string) => {
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("last_active_date, current_streak")
+        .eq("id", uid)
+        .single();
+
+      if (!profile) return;
+
+      const today = new Date();
+      const todayStr = format(today, "yyyy-MM-dd");
+      const lastActive = profile.last_active_date;
+
+      if (lastActive === todayStr) {
+        // Already counted today
+        return;
+      }
+
+      const yesterdayStr = format(subDays(today, 1), "yyyy-MM-dd");
+      let newStreak = 1;
+
+      if (lastActive === yesterdayStr) {
+        newStreak = (profile.current_streak || 0) + 1;
+      }
+
+      await supabase
+        .from("profiles")
+        .update({ current_streak: newStreak, last_active_date: todayStr })
+        .eq("id", uid);
+
+      setStreak(newStreak);
+    } catch (error) {
+      console.error("Error updating streak:", error);
+    }
+  };
+
   const handleCompleteQuest = async (id: string, reward: number) => {
     try {
       // Optimistic Update
-      setSulisBalance(prev => prev + reward);
-      setQuests(prev => prev.map(q => q.id === id ? { ...q, is_completed: true } : q));
+      setSulisBalance((prev) => prev + reward);
+      setQuests((prev) =>
+        prev.map((q) =>
+          q.id === id ? { ...q, is_completed: true, completed_at: new Date().toISOString() } : q
+        )
+      );
       toast.success(`Quest concluída! +${reward} Sulis`);
 
       // Database Update
       const { error: questError } = await supabase
-        .from('quests')
-        .update({ is_completed: true })
-        .eq('id', id);
+        .from("quests")
+        .update({ is_completed: true, completed_at: new Date().toISOString() })
+        .eq("id", id);
 
       if (questError) throw questError;
 
-      // Increment Goal Progress
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: activeGoals, error: goalsError } = await supabase
-          .from('goals')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('is_completed', false);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
 
-        if (!goalsError && activeGoals) {
-          for (const goal of activeGoals) {
-            const newCount = goal.current_count + 1;
-            const isNowCompleted = newCount >= goal.target_count;
+      // Get the quest to check for goal_id
+      const quest = quests.find((q) => q.id === id);
 
-            const updateData: any = { current_count: newCount };
-            if (isNowCompleted) {
-              updateData.is_completed = true;
-              toast.success(`Meta Atingida: ${goal.title}! +${goal.reward_amount} Sulis extras! 🏆`);
+      // Increment Goal Progress only for linked goal
+      if (quest?.goal_id) {
+        const { data: goal } = await supabase
+          .from("goals")
+          .select("*")
+          .eq("id", quest.goal_id)
+          .single();
 
-              // Add goal reward to balance
-              const { error: rpcError } = await supabase.rpc('increment_balance', { amount: goal.reward_amount });
-              if (rpcError) {
-                const { data: cp } = await supabase.from('profiles').select('sulis_balance').eq('id', user.id).single();
-                if (cp) {
-                  await supabase.from('profiles').update({ sulis_balance: (cp.sulis_balance || 0) + goal.reward_amount }).eq('id', user.id);
-                }
-              }
+        if (goal && !goal.is_completed) {
+          const newCount = goal.current_count + 1;
+          const isNowCompleted = newCount >= goal.target_count;
+
+          const updateData: any = { current_count: newCount };
+          if (isNowCompleted) {
+            updateData.is_completed = true;
+            toast.success(
+              `Meta Atingida: ${goal.title}! +${goal.reward_amount} Sulis extras! 🏆`
+            );
+
+            // Add goal reward
+            const { data: cp } = await supabase
+              .from("profiles")
+              .select("sulis_balance")
+              .eq("id", user.id)
+              .single();
+            if (cp) {
+              await supabase
+                .from("profiles")
+                .update({
+                  sulis_balance: (cp.sulis_balance || 0) + goal.reward_amount,
+                })
+                .eq("id", user.id);
+              setSulisBalance((prev) => prev + goal.reward_amount);
             }
-
-            await supabase
-              .from('goals')
-              .update(updateData)
-              .eq('id', goal.id);
           }
-        }
 
-        // Update Profile Balance for the quest reward
-        const { error: profileError } = await supabase
-          .rpc('increment_balance', { amount: reward });
-
-        if (profileError) {
-          const { data: currentProfile } = await supabase.from('profiles').select('sulis_balance').eq('id', user.id).single();
-          if (currentProfile) {
-            await supabase.from('profiles').update({ sulis_balance: currentProfile.sulis_balance + reward }).eq('id', user.id);
-          }
+          await supabase.from("goals").update(updateData).eq("id", goal.id);
         }
       }
 
+      // Update Profile Balance for the quest reward
+      const { data: currentProfile } = await supabase
+        .from("profiles")
+        .select("sulis_balance")
+        .eq("id", user.id)
+        .single();
+      if (currentProfile) {
+        await supabase
+          .from("profiles")
+          .update({
+            sulis_balance: (currentProfile.sulis_balance || 0) + reward,
+          })
+          .eq("id", user.id);
+      }
+
+      // Update streak
+      await updateStreak(user.id);
     } catch (error) {
       console.error("Error completing quest:", error);
       toast.error("Erro ao completar quest.");
+      fetchData();
+    }
+  };
+
+  const handleUncompleteQuest = async (id: string, reward: number) => {
+    try {
+      // Optimistic Update
+      setSulisBalance((prev) => Math.max(0, prev - reward));
+      setQuests((prev) =>
+        prev.map((q) =>
+          q.id === id ? { ...q, is_completed: false, completed_at: null } : q
+        )
+      );
+      toast.info("Quest desmarcada.");
+
+      // Database Update
+      const { error: questError } = await supabase
+        .from("quests")
+        .update({ is_completed: false, completed_at: null })
+        .eq("id", id);
+
+      if (questError) throw questError;
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const quest = quests.find((q) => q.id === id);
+
+      // Decrement Goal Progress if linked
+      if (quest?.goal_id) {
+        const { data: goal } = await supabase
+          .from("goals")
+          .select("*")
+          .eq("id", quest.goal_id)
+          .single();
+
+        if (goal) {
+          const newCount = Math.max(0, goal.current_count - 1);
+          await supabase
+            .from("goals")
+            .update({ current_count: newCount, is_completed: false })
+            .eq("id", goal.id);
+        }
+      }
+
+      // Subtract reward from balance
+      const { data: currentProfile } = await supabase
+        .from("profiles")
+        .select("sulis_balance")
+        .eq("id", user.id)
+        .single();
+      if (currentProfile) {
+        await supabase
+          .from("profiles")
+          .update({
+            sulis_balance: Math.max(0, (currentProfile.sulis_balance || 0) - reward),
+          })
+          .eq("id", user.id);
+      }
+    } catch (error) {
+      console.error("Error uncompleting quest:", error);
+      toast.error("Erro ao desmarcar quest.");
       fetchData();
     }
   };
@@ -162,16 +324,23 @@ const Dashboard = () => {
             </TabsList>
           </div>
 
-          <TabsContent value="today" className="mt-0 focus-visible:outline-none outline-none">
+          <TabsContent
+            value="today"
+            className="mt-0 focus-visible:outline-none outline-none"
+          >
             <TodayView
               username={username}
               quests={quests}
               loading={loading}
               onComplete={handleCompleteQuest}
+              onUncomplete={handleUncompleteQuest}
             />
           </TabsContent>
 
-          <TabsContent value="metrics" className="mt-0 focus-visible:outline-none outline-none">
+          <TabsContent
+            value="metrics"
+            className="mt-0 focus-visible:outline-none outline-none"
+          >
             <MetricsView
               quests={quests}
               sulisBalance={sulisBalance}

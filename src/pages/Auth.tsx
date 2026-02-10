@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Mail, Lock, User, Loader2, Sparkles } from "lucide-react";
+import { Mail, Lock, User, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import logoImage from "@/assets/logo-sulis-quest.png";
 
 const loginSchema = z.object({
   email: z.string().trim().email("Email inválido"),
@@ -35,11 +36,9 @@ const Auth = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
-  // Form state
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [signupUsername, setSignupUsername] = useState("");
@@ -129,19 +128,15 @@ const Auth = () => {
     }
   };
 
-
-
   return (
     <div className="min-h-screen bg-gradient-quest-radial flex items-center justify-center p-4">
-      {/* Decorative orbs */}
       <div className="fixed top-20 left-10 w-64 h-64 rounded-full bg-primary/5 blur-3xl animate-pulse-glow pointer-events-none" />
       <div className="fixed bottom-20 right-10 w-80 h-80 rounded-full bg-secondary/5 blur-3xl animate-pulse-glow pointer-events-none" style={{ animationDelay: "1.5s" }} />
 
       <div className="w-full max-w-md space-y-8 relative z-10">
-        {/* Logo & Tagline */}
         <header className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 animate-float">
-            <Sparkles className="w-8 h-8 text-primary" />
+            <img src={logoImage} alt="Sulis Quest Logo" className="w-24 h-24 object-contain" />
           </div>
           <h1 className="text-4xl md:text-5xl font-display font-bold text-gradient-quest tracking-wide">
             Sulis Quest
@@ -151,7 +146,6 @@ const Auth = () => {
           </p>
         </header>
 
-        {/* Auth Card */}
         <Card className="border-border/50 bg-card/80 backdrop-blur-xl shadow-2xl">
           <CardContent className="p-6 pt-6">
             <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); clearMessages(); }}>
@@ -164,9 +158,6 @@ const Auth = () => {
                 </TabsTrigger>
               </TabsList>
 
-
-
-              {/* Feedback Messages */}
               {message && (
                 <Alert
                   variant={message.type === "error" ? "destructive" : "default"}
@@ -176,135 +167,65 @@ const Auth = () => {
                 </Alert>
               )}
 
-              {/* Login Tab */}
               <TabsContent value="login">
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="login-email" className="text-foreground/80">Email</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="login-email"
-                        type="email"
-                        placeholder="seu@email.com"
-                        value={loginEmail}
-                        onChange={(e) => setLoginEmail(e.target.value)}
-                        className="pl-10 bg-muted/30 border-border/50 rounded-xl h-12 focus-visible:ring-primary/50 placeholder:text-muted-foreground/50"
-                      />
+                      <Input id="login-email" type="email" placeholder="seu@email.com" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} className="pl-10 bg-muted/30 border-border/50 rounded-xl h-12 focus-visible:ring-primary/50 placeholder:text-muted-foreground/50" />
                     </div>
-                    {fieldErrors.email && (
-                      <p className="text-sm text-destructive">{fieldErrors.email}</p>
-                    )}
+                    {fieldErrors.email && <p className="text-sm text-destructive">{fieldErrors.email}</p>}
                   </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="login-password" className="text-foreground/80">Senha</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="login-password"
-                        type="password"
-                        placeholder="••••••••"
-                        value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
-                        className="pl-10 bg-muted/30 border-border/50 rounded-xl h-12 focus-visible:ring-primary/50 placeholder:text-muted-foreground/50"
-                      />
+                      <Input id="login-password" type="password" placeholder="••••••••" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} className="pl-10 bg-muted/30 border-border/50 rounded-xl h-12 focus-visible:ring-primary/50 placeholder:text-muted-foreground/50" />
                     </div>
-                    {fieldErrors.password && (
-                      <p className="text-sm text-destructive">{fieldErrors.password}</p>
-                    )}
+                    {fieldErrors.password && <p className="text-sm text-destructive">{fieldErrors.password}</p>}
                   </div>
-
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full h-12 rounded-xl text-base font-semibold bg-primary hover:bg-primary/90 glow-primary hover:glow-primary-hover transition-all duration-300"
-                  >
-                    {loading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      "Entrar na Aventura"
-                    )}
+                  <Button type="submit" disabled={loading} className="w-full h-12 rounded-xl text-base font-semibold bg-primary hover:bg-primary/90 glow-primary hover:glow-primary-hover transition-all duration-300">
+                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Entrar na Aventura"}
                   </Button>
                 </form>
               </TabsContent>
 
-              {/* Signup Tab */}
               <TabsContent value="signup">
                 <form onSubmit={handleSignup} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signup-username" className="text-foreground/80">Nome de Usuário</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="signup-username"
-                        type="text"
-                        placeholder="heroi_epico"
-                        value={signupUsername}
-                        onChange={(e) => setSignupUsername(e.target.value)}
-                        className="pl-10 bg-muted/30 border-border/50 rounded-xl h-12 focus-visible:ring-primary/50 placeholder:text-muted-foreground/50"
-                      />
+                      <Input id="signup-username" type="text" placeholder="heroi_epico" value={signupUsername} onChange={(e) => setSignupUsername(e.target.value)} className="pl-10 bg-muted/30 border-border/50 rounded-xl h-12 focus-visible:ring-primary/50 placeholder:text-muted-foreground/50" />
                     </div>
-                    {fieldErrors.username && (
-                      <p className="text-sm text-destructive">{fieldErrors.username}</p>
-                    )}
+                    {fieldErrors.username && <p className="text-sm text-destructive">{fieldErrors.username}</p>}
                   </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="signup-email" className="text-foreground/80">Email</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="signup-email"
-                        type="email"
-                        placeholder="seu@email.com"
-                        value={signupEmail}
-                        onChange={(e) => setSignupEmail(e.target.value)}
-                        className="pl-10 bg-muted/30 border-border/50 rounded-xl h-12 focus-visible:ring-primary/50 placeholder:text-muted-foreground/50"
-                      />
+                      <Input id="signup-email" type="email" placeholder="seu@email.com" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} className="pl-10 bg-muted/30 border-border/50 rounded-xl h-12 focus-visible:ring-primary/50 placeholder:text-muted-foreground/50" />
                     </div>
-                    {fieldErrors.email && (
-                      <p className="text-sm text-destructive">{fieldErrors.email}</p>
-                    )}
+                    {fieldErrors.email && <p className="text-sm text-destructive">{fieldErrors.email}</p>}
                   </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="signup-password" className="text-foreground/80">Senha</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="signup-password"
-                        type="password"
-                        placeholder="Mínimo 6 caracteres"
-                        value={signupPassword}
-                        onChange={(e) => setSignupPassword(e.target.value)}
-                        className="pl-10 bg-muted/30 border-border/50 rounded-xl h-12 focus-visible:ring-primary/50 placeholder:text-muted-foreground/50"
-                      />
+                      <Input id="signup-password" type="password" placeholder="Mínimo 6 caracteres" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} className="pl-10 bg-muted/30 border-border/50 rounded-xl h-12 focus-visible:ring-primary/50 placeholder:text-muted-foreground/50" />
                     </div>
-                    {fieldErrors.password && (
-                      <p className="text-sm text-destructive">{fieldErrors.password}</p>
-                    )}
+                    {fieldErrors.password && <p className="text-sm text-destructive">{fieldErrors.password}</p>}
                   </div>
-
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full h-12 rounded-xl text-base font-semibold bg-primary hover:bg-primary/90 glow-primary hover:glow-primary-hover transition-all duration-300"
-                  >
-                    {loading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      "Criar Conta"
-                    )}
+                  <Button type="submit" disabled={loading} className="w-full h-12 rounded-xl text-base font-semibold bg-primary hover:bg-primary/90 glow-primary hover:glow-primary-hover transition-all duration-300">
+                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Criar Conta"}
                   </Button>
                 </form>
               </TabsContent>
-
             </Tabs>
           </CardContent>
         </Card>
 
-        {/* Footer */}
         <p className="text-center text-xs text-muted-foreground/60">
           Ao continuar, você concorda com os Termos de Uso e Política de Privacidade.
         </p>

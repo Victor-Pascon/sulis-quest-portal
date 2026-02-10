@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 interface Goal {
     id: string;
     title: string;
-    type: 'daily' | 'weekly' | 'monthly';
+    type: string;
     current_count: number;
     target_count: number;
     reward_amount: number;
