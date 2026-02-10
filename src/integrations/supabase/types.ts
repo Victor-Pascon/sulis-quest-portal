@@ -86,8 +86,10 @@ export type Database = {
       quests: {
         Row: {
           category: string | null
+          completed_at: string | null
           created_at: string
           description: string | null
+          goal_id: string | null
           id: string
           is_completed: boolean | null
           reminder_active: boolean | null
@@ -98,8 +100,10 @@ export type Database = {
         }
         Insert: {
           category?: string | null
+          completed_at?: string | null
           created_at?: string
           description?: string | null
+          goal_id?: string | null
           id?: string
           is_completed?: boolean | null
           reminder_active?: boolean | null
@@ -110,8 +114,10 @@ export type Database = {
         }
         Update: {
           category?: string | null
+          completed_at?: string | null
           created_at?: string
           description?: string | null
+          goal_id?: string | null
           id?: string
           is_completed?: boolean | null
           reminder_active?: boolean | null
@@ -120,14 +126,25 @@ export type Database = {
           title?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "quests_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_balance: {
+        Args: { amount: number; user_row_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
