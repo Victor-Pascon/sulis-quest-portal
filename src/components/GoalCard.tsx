@@ -1,4 +1,4 @@
-import { Target, Coins, CheckCircle2 } from "lucide-react";
+import { Target, Coins, CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -9,7 +9,7 @@ interface GoalCardProps {
     targetCount: number;
     rewardAmount: number;
     isCompleted: boolean;
-    onComplete?: () => void;
+    isExpanded?: boolean;
 }
 
 export const GoalCard = ({
@@ -19,6 +19,7 @@ export const GoalCard = ({
     targetCount,
     rewardAmount,
     isCompleted,
+    isExpanded,
 }: GoalCardProps) => {
     const progress = Math.min((currentCount / targetCount) * 100, 100);
 
@@ -38,7 +39,7 @@ export const GoalCard = ({
         <Card className={`glass-card transition-all duration-300 relative overflow-hidden ${isCompleted ? 'opacity-70 grayscale-[0.5]' : 'hover:glass-card-hover hover:scale-[1.02]'}`}>
             <CardContent className="p-5 space-y-4">
                 <div className="flex justify-between items-start gap-4">
-                    <div className="space-y-1">
+                    <div className="space-y-1 flex-1">
                         <div className="flex items-center gap-2">
                             <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${typeColors[type] || typeColors.daily}`}>
                                 {typeLabels[type] || type}
@@ -53,8 +54,15 @@ export const GoalCard = ({
                             {title}
                         </h3>
                     </div>
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
-                        <Target className={`w-5 h-5 ${isCompleted ? 'text-success' : 'text-primary'}`} />
+                    <div className="flex items-center gap-2 shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                            <Target className={`w-5 h-5 ${isCompleted ? 'text-success' : 'text-primary'}`} />
+                        </div>
+                        {isExpanded ? (
+                            <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                        ) : (
+                            <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                        )}
                     </div>
                 </div>
 
