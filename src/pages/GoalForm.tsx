@@ -96,22 +96,26 @@ const GoalForm = () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error("Usuário não autenticado");
 
-            const goalData = {
-                user_id: user.id,
-                title: values.title,
-                type: values.type,
-                target_count: parseInt(values.target_count),
-                reward_amount: parseInt(values.reward_amount),
-            };
-
             let error;
             if (isEditMode) {
                 const { error: updateError } = await supabase
                     .from("goals")
-                    .update(goalData)
+                    .update({
+                        title: values.title,
+                        type: values.type,
+                        target_count: parseInt(values.target_count),
+                        reward_amount: parseInt(values.reward_amount),
+                    })
                     .eq("id", id);
                 error = updateError;
             } else {
+                const goalData = {
+                    user_id: user.id,
+                    title: values.title,
+                    type: values.type,
+                    target_count: parseInt(values.target_count),
+                    reward_amount: parseInt(values.reward_amount),
+                };
                 // Create goal
                 const { data: goalResult, error: insertError } = await supabase
                     .from("goals")
